@@ -24,6 +24,7 @@ object SonarBBPlugin {
   final val BitbucketApproveUnapprove = "sonar.bitbucket.approvalFeatureEnabled"
   final val BitbucketBuildStatus = "sonar.bitbucket.buildStatusEnabled"
   final val SonarUnapprovalSeverityLevel = "sonar.bitbucket.maxSeverityApprovalLevel"
+  final val SonarAddNewIssuesFromNonChangedLines = "sonar.bitbucket.addNewIssuesFromNonChangedLines"
 }
 
 
@@ -124,6 +125,14 @@ object SonarBBPlugin {
       defaultValue = "true",
       description = "If enabled, the plug-in will update the build status of the pull request depending on the " +
         "Sonar analysis result. The analysis and also the build is failed if there are any critical or blocker issues.",
+      global = true
+    ),
+    new Property(
+      key = SonarBBPlugin.SonarAddNewIssuesFromNonChangedLines,
+      name = "Add new issues from non-changed lines",
+      defaultValue = "false",
+      description = "If true, new issues that are not related to changed lines will be added as comments " +
+        "in Activity section of PR.",
       global = true
     )
   )
