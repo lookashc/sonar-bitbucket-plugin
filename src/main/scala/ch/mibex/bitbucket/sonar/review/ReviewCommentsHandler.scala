@@ -95,9 +95,17 @@ class ReviewCommentsHandler(
     // new/changed lines to get the correct overall issue count for a pull request
     val issuesOnChangedLines = issuesOnChangedLinesFilter.filter(pullRequest, onlyNewIssues)
     debugLogIssueStatistics(issues, issuesOnChangedLines)
+
+    val issuesToAdd = if (pluginConfig.sonarAddNewIssuesFromNonChangedLines()) onlyNewIssues else issuesOnChangedLines
     val commentsToBeAdded = new mutable.HashMap[String, mutable.Map[Int, StringBuilder]]()
 
-    onlyIssuesWithMinSeverity(issuesOnChangedLines) foreach { issue =>
+    if (pluginConfig.sonarAddNewIssuesFromNonChangedLines()) {
+      logger.debug(LogUtils.f(s"All new comments will be added to PR."))
+    } else {
+      logger.debug(LogUtils.f(s"Only comments related to new/changed lines will be added to PR."))
+    }
+
+    onlyIssuesWithMinSeverity(issuesToAdd) foreach { issue =>
       gitBaseDirResolver.getRepositoryRelativePath(issue).foreach(filePath => {
         // file level comments do not have a line number! we use 0 for them here
         val lineNr = Option(issue.line()).flatMap(l => Option(l.toInt)).getOrElse(0)
